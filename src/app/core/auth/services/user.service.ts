@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Observable, BehaviorSubject } from "rxjs";
 
 import { JwtService } from "./jwt.service";
@@ -6,15 +6,22 @@ import { map, distinctUntilChanged, tap, shareReplay } from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
 import { User } from "../user.model";
 import { Router } from "@angular/router";
+import { from } from "rxjs";
+import {
+  Auth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "@angular/fire/auth";
 
 @Injectable({ providedIn: "root" })
 export class UserService {
+  firebaseAuth = inject(Auth);
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser = this.currentUserSubject
     .asObservable()
     .pipe(distinctUntilChanged());
 
-  public isAuthenticated = this.currentUser.pipe(map((user) => !!user));
+  public isAuthenticated = -this.currentUser.pipe(map((user) => !!user));
 
   constructor(
     private readonly http: HttpClient,
@@ -35,10 +42,21 @@ export class UserService {
     username: string;
     email: string;
     password: string;
-  }): Observable<{ user: User }> {
-    return this.http
-      .post<{ user: User }>("/users", { user: credentials })
-      .pipe(tap(({ user }) => this.setAuth(user)));
+  }): Observable<void> {
+    const registorApp = createUserWithEmailAndPassword(
+      this.firebaseAuth,
+      credentials.email,
+      credentials.password,
+    ).then((response) => {
+      console.log(response.operationType);
+      return updateProfile(response.user, {
+        displayName: credentials.username,
+      });
+    });
+    return from(registorApp);
+    // return this.http
+    //   .post<{ user: User }>("/users", { user: credentials })
+    //   .pipe(tap(({ user }) => this.setAuth(user)));
   }
 
   logout(): void {

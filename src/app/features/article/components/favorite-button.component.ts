@@ -48,28 +48,28 @@ export class FavoriteButtonComponent {
   toggleFavorite(): void {
     this.isSubmitting = true;
 
-    this.userService.isAuthenticated
-      .pipe(
-        switchMap((authenticated) => {
-          if (!authenticated) {
-            void this.router.navigate(["/register"]);
-            return EMPTY;
-          }
+    // this.userService.isAuthenticated
+    //   .pipe(
+    //     switchMap((authenticated) => {
+    //       if (!authenticated) {
+    //         void this.router.navigate(["/register"]);
+    //         return EMPTY;
+    //       }
 
-          if (!this.article.favorited) {
-            return this.articleService.favorite(this.article.slug);
-          } else {
-            return this.articleService.unfavorite(this.article.slug);
-          }
-        }),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: () => {
-          this.isSubmitting = false;
-          this.toggle.emit(!this.article.favorited);
-        },
-        error: () => (this.isSubmitting = false),
-      });
+    //       if (!this.article.favorited) {
+    //         return this.articleService.favorite(this.article.slug);
+    //       } else {
+    //         return this.articleService.unfavorite(this.article.slug);
+    //       }
+    //     }),
+    //     takeUntilDestroyed(this.destroyRef),
+    //   )
+    //   .subscribe({
+    //     next: () => {
+    //       this.isSubmitting = false;
+    //       this.toggle.emit(!this.article.favorited);
+    //     },
+    //     error: () => (this.isSubmitting = false),
+    //   });
   }
 }

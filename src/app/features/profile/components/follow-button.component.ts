@@ -50,28 +50,28 @@ export class FollowButtonComponent {
   toggleFollowing(): void {
     this.isSubmitting = true;
 
-    this.userService.isAuthenticated
-      .pipe(
-        switchMap((isAuthenticated: boolean) => {
-          if (!isAuthenticated) {
-            void this.router.navigate(["/login"]);
-            return EMPTY;
-          }
+    // this.userService.isAuthenticated
+    //   .pipe(
+    //     switchMap((isAuthenticated: boolean) => {
+    //       if (!isAuthenticated) {
+    //         void this.router.navigate(["/login"]);
+    //         return EMPTY;
+    //       }
 
-          if (!this.profile.following) {
-            return this.profileService.follow(this.profile.username);
-          } else {
-            return this.profileService.unfollow(this.profile.username);
-          }
-        }),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (profile) => {
-          this.isSubmitting = false;
-          this.toggle.emit(profile);
-        },
-        error: () => (this.isSubmitting = false),
-      });
+    //       if (!this.profile.following) {
+    //         return this.profileService.follow(this.profile.username);
+    //       } else {
+    //         return this.profileService.unfollow(this.profile.username);
+    //       }
+    //     }),
+    //     takeUntilDestroyed(this.destroyRef),
+    //   )
+    //   .subscribe({
+    //     next: (profile) => {
+    //       this.isSubmitting = false;
+    //       this.toggle.emit(profile);
+    //     },
+    //     error: () => (this.isSubmitting = false),
+    //   });
   }
 }

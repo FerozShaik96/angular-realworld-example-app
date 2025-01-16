@@ -21,7 +21,7 @@ interface AuthForm {
 @Component({
   selector: "app-auth-page",
   templateUrl: "./auth.component.html",
-  imports: [RouterLink, NgIf, ListErrorsComponent, ReactiveFormsModule],
+  imports: [RouterLink, ListErrorsComponent, ReactiveFormsModule],
   standalone: true,
 })
 export default class AuthComponent implements OnInit {
@@ -67,25 +67,38 @@ export default class AuthComponent implements OnInit {
     this.isSubmitting = true;
     this.errors = { errors: {} };
 
-    let observable =
-      this.authType === "login"
-        ? this.userService.login(
-            this.authForm.value as { email: string; password: string },
-          )
-        : this.userService.register(
-            this.authForm.value as {
-              email: string;
-              password: string;
-              username: string;
-            },
-          );
-
-    observable.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    // let observable =
+    //   this.authType === "login"
+    //     ? this.userService.login(
+    //         this.authForm.value as { email: string; password: string },
+    //       )
+    //     : this.userService.register(
+    //         this.authForm.value as {
+    //           email: string;
+    //           password: string;
+    //           username: string;
+    //         },
+    //       );
+    let observable = this.userService.register(
+      this.authForm.value as {
+        email: string;
+        password: string;
+        username: string;
+      },
+    );
+    observable.subscribe({
       next: () => void this.router.navigate(["/"]),
       error: (err) => {
         this.errors = err;
         this.isSubmitting = false;
       },
     });
+    // observable.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    //   next: () => void this.router.navigate(["/"]),
+    //   error: (err) => {
+    //     this.errors = err;
+    //     this.isSubmitting = false;
+    //   },
+    // });
   }
 }
